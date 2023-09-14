@@ -1,0 +1,17 @@
+{
+  "name": "raycast-ts",
+  "module": "raycast.ts",
+  "version": "0.0.1",
+  "license": "MIT",
+  "author": "Logan Moore <logan.moore513@gmail.com>",
+  "type": "module",
+  "scripts": {
+    "example-fps": "bun run examples/fps/index.ts"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
