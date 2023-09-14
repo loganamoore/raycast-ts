@@ -1,17 +1,30 @@
 {
   "name": "raycast-ts",
-  "module": "raycast.ts",
   "version": "0.0.1",
-  "license": "MIT",
   "author": "Logan Moore <logan.moore513@gmail.com>",
-  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/loganamoore/raycast-ts.git"
+  },
+  "module": "raycast.ts",
+  "description": "A simple raycasting module written in typescript. ",
+  "license": "MIT",
   "scripts": {
+    "lint": "tsc",
+    "build": "tsup src/raycast.ts --format cjs,esm --minify --dts",
     "example-fps": "bun run examples/fps/index.ts"
   },
+  "type": "module",
   "devDependencies": {
-    "bun-types": "latest"
+    "bun-types": "latest",
+    "typescript": "^5.0.0",
+    "tsc": "^2.0.4",
+    "tsup": "^7.2.0"
   },
   "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
     "typescript": "^5.0.0"
   }
 }

@@ -1,4 +1,5 @@
 import { bindKey, handleInput } from "./modules/input.mjs";
+import { Ray } from "./../dist/raycast.js";
 
 let canvas, context;
 
@@ -61,6 +62,14 @@ function draw2D(){
     context.beginPath();
     context.moveTo(player.x, player.y);
     context.lineTo(player.x + Math.cos(player.a) * 5, player.y + Math.sin(player.a) * 5);
+    context.stroke();
+
+    let r = new Ray(player.x, player.y, player.a);
+    r.cast(tilemap);
+
+    context.beginPath();
+    context.moveTo(r.x, r.y);
+    context.lineTo(r.x + Math.cos(r.a) * r.m, r.y + Math.sin(r.a) * r.m);
     context.stroke();
 }
 

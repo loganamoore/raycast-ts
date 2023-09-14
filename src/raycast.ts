@@ -34,9 +34,9 @@ export class Ray{
     public cast(tilemap: iTileMap): void{
 
         const mapcell = (x: number, y: number): number => {
-		    if(x < 0 || y < 0 || x >= tilemap.w || y >= tilemap.h)
+            if(x < 0 || y < 0 || x >= tilemap.w || y >= tilemap.h)
                 return -1;
-            return tilemap.data[y][x];
+            return tilemap.data[y][x] ?? -1;
         }
 
         // Snap the ray to the nearest map grid coordinates.
@@ -57,24 +57,24 @@ export class Ray{
 
         while(!cell){
             if(length.x < length.y){
-				mappos.x += this.xdir;
-				length.x += this.xstep;
-				side = false;
-			}
-			else{
+                mappos.x += this.xdir;
+                length.x += this.xstep;
+                side = false;
+            }
+            else{
                 mappos.y += this.ydir;
                 length.y += this.ystep;
-				side = true;
-			}
+                side = true;
+            }
 
             cell = mapcell(mappos.x, mappos.y);
 
             if(cell){
-				//this.hit = cell;
+                //this.hit = cell;
                 length = { x: length.x - this.xstep, y: length.y - this.ystep };
-				this.m = (!side) ? length.x : length.y;
-				break;
-			}
+                this.m = (!side) ? length.x : length.y;
+                break;
+            }
         }
     };
 }
