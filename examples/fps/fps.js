@@ -4,8 +4,7 @@ import { Ray } from "./../dist/raycast.js";
 let canvas, context;
 
 const tmap = {
-    "w": 10, "h": 10,
-    "cw": 16, "ch": 16,
+    "w": 10, "h": 10, "c": 16,
     "data":[
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -27,12 +26,12 @@ function drawMap2D(tilemap){
             const cell = tilemap.data[y][x];
             if(cell != 0)
                 context.fillStyle = "#ff0000ff";
-            context.fillRect(x * tilemap.cw, y * tilemap.ch, tilemap.cw, tilemap.ch);
+            context.fillRect(x * tilemap.c, y * tilemap.c, tilemap.c, tilemap.c);
         }
     }
 }
 
-let player = { x: 100, y: 100, a: 0, speed: 5, torque: 0.1 };
+let player = { x: 100, y: 100, a: 0, speed: 3, torque: 0.1 };
 
 function init(){
     canvas = document.querySelector("canvas");
@@ -65,7 +64,9 @@ function draw2D(){
     context.stroke();
 
     let r = new Ray(player.x, player.y, player.a);
-    r.cast(tilemap);
+    r.cast(tmap);
+
+    console.log(r.m);
 
     context.beginPath();
     context.moveTo(r.x, r.y);

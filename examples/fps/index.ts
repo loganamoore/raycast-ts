@@ -2,6 +2,10 @@ const server = Bun.serve({
     port: 80,
     async fetch(req: Request){
         const url = new URL(req.url).pathname;
+
+        if(url == "/dist/raycast.js")
+            return new Response(Bun.file(__dirname + '/../../dist/raycast.js'));
+
         return new Response(Bun.file(__dirname + ((url == "/") ? '/index.html' : url)));
     },
     error(){

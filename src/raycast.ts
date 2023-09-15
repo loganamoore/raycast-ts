@@ -2,7 +2,7 @@ const TAU: number = 2 * Math.PI;
 
 interface iTileMap{
     w: number; h: number;       // width and height of map (in cells)
-    cw : number; ch: number;    // width and heigh of cells
+    c: number;                  // the size of each cell in pixels, (cs*cs)
     data: number[][];           // cell values
 }
 
@@ -41,15 +41,15 @@ export class Ray{
 
         // Snap the ray to the nearest map grid coordinates.
         let mappos: iVec2 = {
-            x: clamp(Math.floor(this.x / tilemap.cw), 0, tilemap.w),
-            y: clamp(Math.floor(this.y / tilemap.ch), 0, tilemap.h)
+            x: clamp(Math.floor(this.x / tilemap.c), 0, tilemap.w),
+            y: clamp(Math.floor(this.y / tilemap.c), 0, tilemap.h)
         }
 
         let offset: iVec2 = { x: Number(!(this.xdir < 0)), y: Number(!(this.ydir < 0))}
 
         let length: iVec2 = {
-            x: Math.abs(this.x - (mappos.x + offset.x) * tilemap.cw) / tilemap.cw * this.xstep,
-            y: Math.abs(this.y - (mappos.y + offset.y) * tilemap.ch) / tilemap.ch * this.ystep
+            x: Math.abs(this.x - (mappos.x + offset.x) * tilemap.c) / tilemap.c * this.xstep,
+            y: Math.abs(this.y - (mappos.y + offset.y) * tilemap.c) / tilemap.c * this.ystep
         }
 
         let cell: number = mapcell(mappos.x, mappos.y);

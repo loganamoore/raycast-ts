@@ -2,8 +2,7 @@ import { expect, test } from "bun:test";
 import { Ray } from "../src/raycast";
 
 const tmap = {
-    "w": 10, "h": 10,
-    "cw": 16, "ch": 16,
+    "w": 10, "h": 10, "c" : 16,
     "data":[
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],

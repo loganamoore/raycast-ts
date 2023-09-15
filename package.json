@@ -11,7 +11,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "tsc",
-    "build": "tsup src/raycast.ts --format cjs,esm --minify --dts",
+    "build": "bun run lint && tsup src/raycast.ts --format cjs,esm --dts",
     "example-fps": "bun run examples/fps/index.ts"
   },
   "type": "module",
