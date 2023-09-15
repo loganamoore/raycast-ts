@@ -17,8 +17,9 @@ const tmap = {
     ]
 };
 
+const v = -3.14;
+
 test("Ray._constructor()", (): void => {
-    const v = -3.14;
     let r = new Ray(v, v, v, v);
 
     expect(r.x).toBe(v);
@@ -29,4 +30,14 @@ test("Ray._constructor()", (): void => {
     expect(r.sin).toBe(Math.sin(v));
 
     r.cast(tmap);
+});
+
+test("Ray.cast() speed test", (): void => {
+    let r = new Ray(20, 20, v);
+    [1, 10, 100, 1000, 10000, 1000000, 10000000].forEach((n) => {
+        const start = Date.now();
+        for(let i: number = 0; i < n; i++)
+            r.cast(tmap);
+        console.log(n + ": " + (Date.now() - start) + "ms");
+    });
 });

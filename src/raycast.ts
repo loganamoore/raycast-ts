@@ -72,7 +72,7 @@ export class Ray{
             if(cell){
                 //this.hit = cell;
                 length = { x: length.x - this.xstep, y: length.y - this.ystep };
-                this.m = (!side) ? length.x : length.y;
+                this.m = (!side ? length.x : length.y) * tilemap.c;
                 break;
             }
         }

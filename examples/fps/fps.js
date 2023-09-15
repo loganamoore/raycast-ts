@@ -7,13 +7,13 @@ const tmap = {
     "w": 10, "h": 10, "c": 16,
     "data":[
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+        [1, 0, 1, 0, 1, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+        [1, 1, 1, 0, 1, 0, 0, 0, 0, 1],
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 1, 0, 1],
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     ]
@@ -58,15 +58,10 @@ function draw2D(){
     context.arc(player.x, player.y, 5, 0, 2 * Math.PI);
     context.stroke();
 
-    context.beginPath();
-    context.moveTo(player.x, player.y);
-    context.lineTo(player.x + Math.cos(player.a) * 5, player.y + Math.sin(player.a) * 5);
-    context.stroke();
-
     let r = new Ray(player.x, player.y, player.a);
     r.cast(tmap);
 
-    console.log(r.m);
+    context.strokeStyle = "#00f";
 
     context.beginPath();
     context.moveTo(r.x, r.y);
