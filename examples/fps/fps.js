@@ -1,10 +1,10 @@
 import { bindKey, handleInput } from "./modules/input.mjs";
-import { Ray } from "./../dist/raycast.js";
+import { Ray, raycast } from "./../dist/raycast.js";
 
 let canvas, context;
 
 const tmap = {
-    "w": 10, "h": 10, "c": 16,
+    "width": 10, "height": 10, "cellsize": 16,
     "data":[
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
@@ -20,18 +20,18 @@ const tmap = {
 };
 
 function drawMap2D(tilemap){
-    for(let y = 0; y < tilemap.h; y++){
-        for(let x = 0; x < tilemap.w; x++){
+    for(let y = 0; y < tilemap.height; y++){
+        for(let x = 0; x < tilemap.width; x++){
             context.fillStyle = "#ffffff00";
             const cell = tilemap.data[y][x];
             if(cell != 0)
                 context.fillStyle = "#ff0000ff";
-            context.fillRect(x * tilemap.c, y * tilemap.c, tilemap.c, tilemap.c);
+            context.fillRect(x * tilemap.cellsize, y * tilemap.cellsize, tilemap.cellsize, tilemap.cellsize);
         }
     }
 }
 
-let player = { x: 100, y: 100, a: 0, speed: 3, torque: 0.1 };
+let player = { x: 100, y: 100, a: 0, speed: 1, torque: 0.01 };
 
 function init(){
     canvas = document.querySelector("canvas");
@@ -39,6 +39,8 @@ function init(){
 
     context.imageSmoothingEnabled = false;
     context.mozImageSmoothingEnabled = false;
+    
+    resize();
 
     bindKey('w', () => { player.x += Math.cos(player.a) * player.speed; player.y += Math.sin(player.a) * player.speed; });
     bindKey('s', () => { player.x -= Math.cos(player.a) * player.speed; player.y -= Math.sin(player.a) * player.speed; });
@@ -48,6 +50,20 @@ function init(){
 
 function draw2D(){
     context.clearRect(0, 0, canvas.width, canvas.height);
+
+    let camera = {
+        x: player.x,
+        y: player.y,
+        angle: player.a,
+        focus: 0.8,
+        zoom: 1,
+        width: canvas.width,
+        height: canvas.height
+    };
+
+    console.log(canvas.width + ", " + canvas.height);
+
+    raycast(camera, tmap, context);
 
     drawMap2D(tmap);
 
@@ -61,11 +77,14 @@ function draw2D(){
     let r = new Ray(player.x, player.y, player.a);
     r.cast(tmap);
 
+    // Multiply the distance scalar by the unit cell size
+    r.magnitude *= tmap.cellsize;
+
     context.strokeStyle = "#00f";
 
     context.beginPath();
     context.moveTo(r.x, r.y);
-    context.lineTo(r.x + Math.cos(r.a) * r.m, r.y + Math.sin(r.a) * r.m);
+    context.lineTo(r.x + Math.cos(r.angle) * r.magnitude, r.y + Math.sin(r.angle) * r.magnitude);
     context.stroke();
 }
 
@@ -81,7 +100,15 @@ function main(){
     requestAnimationFrame(update);
 }
 
+function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
 // Call the main function once the documented has loaded.
 document.addEventListener('readystatechange', e => {
 	if(document.readyState === "complete"){ main(); }
 });
+
+// resize the canvas to fill browser window dynamically
+window.addEventListener('resize', resize, false);

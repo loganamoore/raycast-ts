@@ -12,7 +12,7 @@
   "scripts": {
     "lint": "tsc",
     "build": "bun run lint && tsup src/raycast.ts --format cjs,esm --dts",
-    "example-fps": "bun run examples/fps/index.ts"
+    "example-fps": "bun run build && bun run examples/fps/index.ts"
   },
   "type": "module",
   "devDependencies": {
