@@ -56,12 +56,10 @@ function draw2D(){
         y: player.y,
         angle: player.a,
         focus: 0.8,
-        zoom: 1,
+        zoom: 0,
         width: canvas.width,
         height: canvas.height
     };
-
-    console.log(canvas.width + ", " + canvas.height);
 
     raycast(camera, tmap, context);
 

@@ -93,10 +93,8 @@ export function raycast(camera: iCamera, map: iTileMap, ctx: any){
     for(let x = 0; x < camera.width; x++){
 
         let a = x / camera.width - 0.5;
-
         let b = Math.atan2(a, camera.focus);
-
-        let c = b /* * 180 / Math.PI*/;
+        let c = b;
 
         let ray = new Ray(camera.x, camera.y, camera.angle + c);
         ray.cast(map);
@@ -115,36 +113,14 @@ export function raycast(camera: iCamera, map: iTileMap, ctx: any){
             y: (lineHeight / 2) + (camera.height / 2) + camera.zoom
         };
 
-        let wallX: number = ((ray.y / map.cellsize) + (ray.magnitude * (ray.side ? ray.cos : ray.sin))) % 1;
-        ctx.strokeStyle = ray.side ? "#0000FF" : "#7777FF";
+        //let wallX: number = ((ray.y / map.cellsize) + (ray.magnitude * (ray.side ? ray.cos : ray.sin))) % 1;
 
-
-        //x, yStart, 2, yEnd - yStart
+        ctx.strokeStyle = ray.side ? "#0000FF" : "#5555FF";
 
         ctx.beginPath();
         ctx.moveTo(x, line.x);
-        ctx.lineTo(x, line.y - line.x);
+        ctx.lineTo(x, line.y);
         ctx.stroke();
-
-
-        
-
-        /*let texX: number = Math.floor(wallX * t.image.width);
-        if(!ray.side && ray.cos > 0)
-            texX = t.image.width - texX - 1;
-        if(ray.side && ray.sin < 0)
-            texX = t.image.width - texX - 1;
-
-        
-
-        let t = Textures.getTexture(ray.hit);
-        if(t){
-
-            
-
-            t.draw3DColumn(window, texX, x, line.x, line.y);
-        }*/
-
     }
 
 }
