@@ -28,10 +28,8 @@ interface iRay{
     x: number; y: number;                 // coordinates
     angle: number; length: number;        // angle and magnitude
     cos: number; sin: number;             // cos & sin for angle
-
     xdir: number; ydir: number;
     xstep: number, ystep: number;
-
     side: boolean; hit: number;
 }
 
@@ -74,7 +72,7 @@ export function raycast(tilemap: iTileMap, x: number, y: number, angle: number, 
         cell = mapcell(xmappos, ymappos, tilemap);
 
         if(cell){
-            length = !side ? xdist - xstep : ydist = ystep;
+            length = !side ? xdist - xstep : ydist - ystep;
             break;
         }
     }
