@@ -1,6 +1,4 @@
-const TAU: number = 2 * Math.PI;
-
-interface iVec2{ x: number; y: number; }
+const TAU: number = 2 * Math.PI;    // 360 degrees
 
 interface iTileMap{
     width: number; height: number;       // width and height of map (in cells)
@@ -20,75 +18,80 @@ const clamp = (num: number, min: number, max:number):number => {
 	return Math.min(Math.max(num, min), max);
 };
 
-export class Ray{
-    public x: number; public y: number;                 // coordinates
-    public angle: number; public magnitude: number;     // angle and magnitude
-    public cos: number; public sin: number;             // cos & sin for angle
-
-    public xdir: number; public ydir: number;
-    public xstep: number; public ystep: number;
-
-    public side: boolean = false;
-
-    constructor(x: number, y: number, angle: number, magnitude: number = Infinity){
-        this.x = x; this.y = y;
-        this.angle = angle; this.magnitude = magnitude;
-        this.cos = Math.cos(angle); this.sin = Math.sin(angle);
-
-        this.xdir = (this.cos <= 0) ? -1 : 1;
-        this.ydir = (this.sin <= 0) ? -1 : 1;
-        this.xstep = Math.sqrt(1 + Math.pow(this.sin / this.cos, 2));
-        this.ystep = Math.sqrt(1 + Math.pow(this.cos / this.sin, 2));
-    };
-
-    public cast(tilemap: iTileMap): void{
-
-        const mapcell = (x: number, y: number): number => {
-            if(x < 0 || y < 0 || x >= tilemap.width || y >= tilemap.height)
-                return -1;
-            return tilemap.data[y][x] ?? -1;
-        }
-
-        // Snap the ray to the nearest map grid coordinates.
-        let mappos: iVec2 = {
-            x: clamp(Math.floor(this.x / tilemap.cellsize), 0, tilemap.width),
-            y: clamp(Math.floor(this.y / tilemap.cellsize), 0, tilemap.height)
-        }
-
-        let offset: iVec2 = { x: Number(!(this.xdir < 0)), y: Number(!(this.ydir < 0))}
-
-        let length: iVec2 = {
-            x: Math.abs(this.x - (mappos.x + offset.x) * tilemap.cellsize) / tilemap.cellsize * this.xstep,
-            y: Math.abs(this.y - (mappos.y + offset.y) * tilemap.cellsize) / tilemap.cellsize * this.ystep
-        }
-
-        let cell: number = mapcell(mappos.x, mappos.y);
-
-        while(!cell){
-            if(length.x < length.y){
-                mappos.x += this.xdir;
-                length.x += this.xstep;
-                this.side = false;
-            }
-            else{
-                mappos.y += this.ydir;
-                length.y += this.ystep;
-                this.side = true;
-            }
-
-            cell = mapcell(mappos.x, mappos.y);
-
-            if(cell){
-                //this.hit = cell;
-                length = { x: length.x - this.xstep, y: length.y - this.ystep };
-                this.magnitude = !this.side ? length.x : length.y;
-                break;
-            }
-        }
-    };
+const mapcell = (x: number, y: number, tilemap: iTileMap): number => {
+    if(x < 0 || y < 0 || x >= tilemap.width || y >= tilemap.height)
+        return -1;
+    return tilemap.data[y][x] ?? -1;
 }
 
-export function raycast(camera: iCamera, map: iTileMap, ctx: any){
+interface iRay{
+    x: number; y: number;                 // coordinates
+    angle: number; length: number;        // angle and magnitude
+    cos: number; sin: number;             // cos & sin for angle
+
+    xdir: number; ydir: number;
+    xstep: number, ystep: number;
+
+    side: boolean; hit: number;
+}
+
+export function raycast(tilemap: iTileMap, x: number, y: number, angle: number, length: number = Infinity): iRay{
+    let cos: number = Math.cos(angle);
+    let sin: number = Math.sin(angle);
+
+    let xdir: number = (cos <= 0) ? -1 : 1;
+    let ydir: number = (sin <= 0) ? -1 : 1;
+
+    let xstep: number = Math.sqrt(1 + Math.pow(sin / cos, 2));
+    let ystep: number = Math.sqrt(1 + Math.pow(cos / sin, 2));
+
+    let side: boolean = false;
+
+    // Snap the ray to the nearest map grid coordinates.
+    let xmappos = clamp(Math.floor(x / tilemap.cellsize), 0, tilemap.width);
+    let ymappos = clamp(Math.floor(y / tilemap.cellsize), 0, tilemap.height);
+
+    let xoffset = Number(!(xdir < 0));
+    let yoffset = Number(!(ydir < 0));
+
+    let xdist = Math.abs(x - (xmappos + xoffset) * tilemap.cellsize) / tilemap.cellsize * xstep;
+    let ydist = Math.abs(y - (ymappos + yoffset) * tilemap.cellsize) / tilemap.cellsize * ystep;
+
+    let cell: number = mapcell(xmappos, ymappos, tilemap);
+
+    while(!cell){
+        if(xdist < ydist){
+            xmappos += xdir;
+            xdist += xstep;
+            side = false;
+        }
+        else{
+            ymappos += ydir;
+            ydist += ystep;
+            side = true;
+        }
+
+        cell = mapcell(xmappos, ymappos, tilemap);
+
+        if(cell){
+            length = !side ? xdist - xstep : ydist = ystep;
+            break;
+        }
+    }
+
+    return {
+        x: x, y: y,
+        angle: angle, length: length,
+        cos: cos, sin: sin,
+        xdir: xdir, ydir: ydir,
+        xstep: xstep, ystep: ystep,
+        side: side, hit: cell
+    } as iRay;
+};
+
+export function raycast3D(camera: iCamera, map: iTileMap, ctx: any): Array<iRay>{
+
+    let results: Array<iRay> = [];
 
     for(let x = 0; x < camera.width; x++){
 
@@ -96,10 +99,9 @@ export function raycast(camera: iCamera, map: iTileMap, ctx: any){
         let b = Math.atan2(a, camera.focus);
         let c = b;
 
-        let ray = new Ray(camera.x, camera.y, camera.angle + c);
-        ray.cast(map);
+        let ray = raycast(map, camera.x, camera.y, camera.angle + c);
         
-        let perpWallDist: number = ray.magnitude * Math.cos(b);
+        let perpWallDist: number = ray.length * Math.cos(b);
 
         if (perpWallDist === Infinity)
             continue;
@@ -108,19 +110,18 @@ export function raycast(camera: iCamera, map: iTileMap, ctx: any){
         let lineHeight: number = Math.floor(camera.height / perpWallDist);
 
         //calculate lowest and highest pixel to fill in current stripe
-        let line: iVec2 = {
-            x: (-lineHeight / 2) + (camera.height / 2) + camera.zoom,
-            y: (lineHeight / 2) + (camera.height / 2) + camera.zoom
-        };
 
-        //let wallX: number = ((ray.y / map.cellsize) + (ray.magnitude * (ray.side ? ray.cos : ray.sin))) % 1;
+        let yStart = (-lineHeight / 2) + (camera.height / 2) + camera.zoom;
+        let yEnd = (lineHeight / 2) + (camera.height / 2) + camera.zoom;
 
         ctx.strokeStyle = ray.side ? "#0000FF" : "#5555FF";
 
         ctx.beginPath();
-        ctx.moveTo(x, line.x);
-        ctx.lineTo(x, line.y);
+        ctx.moveTo(x, yStart);
+        ctx.lineTo(x, yEnd);
         ctx.stroke();
     }
+
+    return results;
 
 }

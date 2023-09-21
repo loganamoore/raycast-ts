@@ -1,10 +1,10 @@
 import { bindKey, handleInput } from "./modules/input.mjs";
-import { Ray, raycast } from "./../dist/raycast.js";
+import { raycast, raycast3D } from "./../dist/raycast.js";
 
 let canvas, context;
 
 const tmap = {
-    "width": 10, "height": 10, "cellsize": 16,
+    "width": 10, "height": 10, "cellsize": 32,
     "data":[
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
@@ -61,28 +61,27 @@ function draw2D(){
         height: canvas.height
     };
 
-    raycast(camera, tmap, context);
+    raycast3D(camera, tmap, context);
 
     drawMap2D(tmap);
 
     context.lineWidth = 1;
-	context.strokeStyle = "#0f0";
+	context.strokeStyle = "#fff";
 
     context.beginPath();
     context.arc(player.x, player.y, 5, 0, 2 * Math.PI);
     context.stroke();
 
-    let r = new Ray(player.x, player.y, player.a);
-    r.cast(tmap);
+    let r = raycast(tmap, player.x, player.y, player.a);
 
     // Multiply the distance scalar by the unit cell size
-    r.magnitude *= tmap.cellsize;
+    r.length *= tmap.cellsize;
 
-    context.strokeStyle = "#00f";
+    context.strokeStyle = "#0f0";
 
     context.beginPath();
     context.moveTo(r.x, r.y);
-    context.lineTo(r.x + Math.cos(r.angle) * r.magnitude, r.y + Math.sin(r.angle) * r.magnitude);
+    context.lineTo(r.x + r.cos * r.length, r.y + r.sin * r.length);
     context.stroke();
 }
 
